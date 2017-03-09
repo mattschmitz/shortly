@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       dist: {
         src: [
           'public/client/**/*.js',
-          'public/lib/**/*.js',
+          // 'public/lib/**/*.js',
         ],
         dest: 'public/build.js',
       }
@@ -103,18 +103,13 @@ module.exports = function(grunt) {
   grunt.registerTask('build', [
   ]);
 
-  grunt.registerTask('server-prod', [
+  grunt.registerTask('upload-prod', [
     'shell:prodServer'
   ]);
 
-  grunt.registerTask('server-dev', [
+  grunt.registerTask('upload-dev', [
     'shell:devServer'
   ]);  
-
-  grunt.registerTask('start', [
-    //start server using nodemon
-    'nodemon'
-  ]);
 
   grunt.registerTask('uglifyAll', [
     //uglify files before deployment
@@ -122,27 +117,37 @@ module.exports = function(grunt) {
     'cssmin'
   ]);
 
-  grunt.registerTask('watch', [
-    //watch source code for changes in order to rerun any grunt tasks as appropriate
-    'nodemon',
-    'watch'
-  ]);
+  // grunt.registerTask('start', [
+  //   //watch source code for changes in order to rerun any grunt tasks as appropriate
+  //   'watch',
+  //   'nodemon',
+  // ]);
 
   grunt.registerTask('upload', function(n) {
     if (grunt.option('prod')) {
       // add your production server task here
-      grunt.task.run([ 'server-prod' ]);
+      grunt.task.run([ 'upload-prod' ]);
     } else {
-      grunt.task.run([ 'server-dev' ]);
+      grunt.task.run([ 'server-dev', 'upload-dev' ]);
     }
   });
 
-  grunt.registerTask('deploy', [
+  grunt.registerTask('preDeploy', [
     'test',
     'eslint',
     'concat',
     'uglifyAll'
   ]);
+
+  grunt.registerTask('deploy', function(n) {
+    console.log(n);
+    grunt.task.run([ 'preDeploy']);
+    if (grunt.option('prod')) {
+      grunt.task.run([ 'server-prod' ]);
+    } else {
+      grunt.task.run([ 'server-dev']);
+    }
+  });
 
 
 };
